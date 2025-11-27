@@ -1,3 +1,8 @@
+## Presentation du Projet de Revue de code
+MGL869 -L’ingénierie de mise en production des versions logicielles
+### Nom: Sergio Escobar Beltran
+### Code Étudiant: ESCS18338601
+
 ## Objectif du Projet
 Déterminer si les reviewers manifestent des attitudes plus positives (sentiment, bienveillance, absence de critique dure) dans leurs commentaires lorsqu'ils évaluent des PRs générées par des agents IA comparées aux PRs humaines.
 
