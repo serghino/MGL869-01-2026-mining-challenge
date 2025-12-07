@@ -1,4 +1,4 @@
 *.pdf
 .DS_Store
-*.png
+images/*.png
 *.txt
