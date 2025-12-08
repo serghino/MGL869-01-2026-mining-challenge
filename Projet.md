@@ -33,7 +33,7 @@ Déterminer si les reviewers manifestent des attitudes plus positives (sentiment
 ---
 
 ## 2. Contexte et motivation  
-Avec l’essor des agents de codage autonomes alimentés par l’intelligence artificielle, tels que GitHub Copilot et ChatGPT, le paysage du développement logiciel connaît une transformation majeure. Ces agents assistent les développeurs en générant du code, en suggérant des améliorations et en automatisant des tâches répétitives. Toutefois, leur intégration dans les flux de travail collaboratifs soulève d’importantes questions quant à la dynamique d’équipe et aux modes de communication. Il devient alors essentiel de comprendre comment les développeurs perçoivent et évaluent les contributions issues de l’IA, notamment à travers les commentaires formulés lors des revues de code.
+Avec l’essor des agents de codage autonomes alimentés par l’intelligence artificielle, tels que GitHub Copilot, OpenAI_Codex, Devin, Cursor ou Claude_Code, le paysage du développement logiciel connaît une transformation majeure. Ces agents assistent les développeurs en générant du code, en suggérant des améliorations et en automatisant des tâches répétitives. Toutefois, leur intégration dans les flux de travail collaboratifs soulève d’importantes questions quant à la dynamique d’équipe et aux modes de communication. Il devient alors essentiel de comprendre comment les développeurs perçoivent et évaluent les contributions issues de l’IA, notamment à travers les commentaires formulés lors des revues de code.
 
 ---
 
@@ -59,7 +59,7 @@ Les agents IA utilisent un ton significativement plus positif et bienveillant qu
    Un échantillon équilibré de commentaires IA vs humains est constitué par stratification selon `user_type`. Des statistiques descriptives sont calculées, puis un test de Mann-Whitney U est appliqué sur le score `compound` de VADER (Étapes 13 et 14) afin d’évaluer les différences de ton moyen entre les deux groupes. Des visualisations (boxplots, histogrammes) permettent d’inspecter la distribution des scores.
 
 4. **Analyse ciblée des commentaires négatifs**  
-   Une analyse spécifique (Étape 15) isole les commentaires classés comme « négatifs » pour les agents IA et pour les humains. Nous examinons leur fréquence, leur longueur moyenne ainsi que les mots-clés dominants (p. ex. *error*, *bug*, *fail*, *remove*, *unnecessary*) afin de comparer les profils sémantiques entre les deux groupes.
+   Une analyse spécifique (Étape 15) isole les commentaires classés comme « négatifs » pour les agents IA et pour les humains, à partir des tables `pr_comments` (pour les commentaires) et `pr_reviews` (pour les reviews). Au total, **2 566 commentaires humains**, **11 221 commentaires d’agents IA**, **7 868 reviews humaines** et **3 145 reviews d’agents IA** ont été analysés. Nous examinons leur fréquence, leur longueur moyenne ainsi que les mots-clés dominants (p. ex. *error*, *bug*, *fail*, *remove*, *unnecessary*) afin de comparer les profils sémantiques entre les deux groupes.
 
 5. **Contrôles et limites**  
    Les variables complémentaires (longueur des commentaires, `user_type`, type de message « comment » vs « review ») sont utilisées pour contextualiser les résultats. Toutefois, certaines variables de confusion potentielles (langage de programmation, taille de la PR, projet, configuration précise de l’agent IA) ne sont pas encore intégrées dans cette analyse.
@@ -74,18 +74,49 @@ Les agents IA utilisent un ton significativement plus positif et bienveillant qu
 
 ## 6. Résultats  
 
-- **Distribution du corpus filtré** : 39 122 commentaires sur des PR générées par des agents IA, dont environ 70 % attribués à des agents de revue (bots IA) et 30 % à des utilisateurs humains, après exclusion des bots opérationnels.  
+- **Distribution du corpus filtré** : 39 122 commentaires sur des PR générées par des agents IA, dont 27 416 (≈ 70 %) attribués à des agents de revue automatisés (bots IA) et 11 706 (≈ 30 %) à des utilisateurs humains, après exclusion des bots opérationnels.
 
 - **Tonalité moyenne (VADER)** : Le score moyen `compound` est d’environ 0,143 pour les commentaires des agents IA contre 0,100 pour ceux des humains (différence ≈ +0,043). Le test de Mann-Whitney U indique une différence statistiquement significative (p < 0,001).  
 
 - **Catégories de sentiment** :  
   - **Agents IA** : profil plus polarisé, avec une proportion plus élevée de commentaires positifs, mais également une part non négligeable de commentaires négatifs.  
-  - **Humains** : profil plus équilibré, avec une majorité de commentaires neutres et une répartition plus modérée entre le positif et le négatif.  
+  - **Humains** : profil plus équilibré, avec une majorité de commentaires neutres et une répartition plus modérée entre le positif et le négatif. 
+  
+  - La Figure 1, `distribution_categories_sentiments_VADER_SCORE.png`,
+  présente la distribution globale des catégories de sentiment
+  (positif, négatif, neutre) pour l’ensemble des commentaires
+  analysés. On observe une prédominance des commentaires positifs,
+  suivis des commentaires négatifs, puis des neutres, ce qui indique
+  un ton globalement plutôt favorable dans les revues de code.![Figure 1 – Distribution des catégories de sentiment](images/distribution_categories_sentiments_VADER_SCORE.png)
+
+  - **Distribution du score VADER** :  
+  La Figure 2, `distribution_sentiment_VADER_SCORE.png`, illustre
+  la distribution du score `compound` de VADER pour l’ensemble des
+  commentaires. La majorité des valeurs se situe légèrement au‑dessus
+  de 0, ce qui confirme un ton globalement plutôt positif, tout en
+  laissant apparaître une proportion non négligeable de commentaires
+  plus critiques du côté des scores négatifs.![Figure 2 – Distribution du score compound VADER](images/distribution_sentiment_VADER_SCORE.png)
 
 - **Longueur moyenne des commentaires** : Les commentaires des agents IA sont en moyenne environ trois fois plus longs que ceux des humains (environ 170 mots contre 60 mots), tant pour les sentiments positifs que négatifs, ce qui suggère un style de rétroaction plus détaillé et explicite.  
 
-- **Analyse des commentaires négatifs** : Malgré un ton globalement plus positif, les agents IA produisent un volume non trivial de commentaires négatifs. Ceux-ci contiennent fréquemment un vocabulaire technique lié à la qualité du code (*bug*, *error*, *fail*, *remove*, *unnecessary*). Ces commentaires sont généralement plus longs et plus argumentés que ceux des humains.
-> **Il apparaît ainsi que la « négativité » détectée chez les agents IA ne reflète pas une tonalité émotionnelle défavorable, mais plutôt une fonction technique de détection et d’explication des erreurs, que les outils d’analyse classent comme négative en raison du vocabulaire employé.**
+- **Analyse des commentaires négatifs** : Malgré un ton globalement plus positif, les agents IA produisent un volume non trivial de commentaires négatifs. Ceux-ci contiennent fréquemment un vocabulaire technique lié à la qualité du code (*bug*, *error*, *fail*, *remove*, *unnecessary*). Ces commentaires sont généralement plus longs et plus argumentés que ceux des humains. 
+La Figure 3 (`distribution_negatives_comments.png`) montre la
+distribution des sentiments pour les commentaires humains vs IA.
+![Figure 3 – Distribution des sentiments – Commentaires humains vs IA](images/distribution_negatives_comments.png)
+La Figure 4 (`distribution_negatives_reviews.png`) montre la
+distribution des sentiments pour les reviews humaines vs IA.
+![Figure 4 – Distribution des sentiments – Reviews humains vs IA](images/distribution_negatives_reviews.png)
+
+> **La « négativité » détectée chez les agents IA reflète donc
+> davantage une activité de signalement et d’explication des défauts
+> qu’une tonalité émotionnelle défavorable, les outils d’analyse
+> classant comme négatifs les termes techniques associés aux erreurs.
+
+> On observe également que, pour les reviews humaines, la distribution
+> est majoritairement neutre avec très peu de reviews réellement
+> négatives, tandis que pour les reviews d’agents IA, la proportion
+> de reviews négatives est plus élevée mais reste inférieure à celle
+> des reviews positives.**
 
 - **Conclusion statistique** : L’hypothèse nulle H0 est rejetée. Les commentaires générés par les agents IA de revue sont globalement plus positifs, plus longs et plus structurés que ceux des reviewers humains, tout en intégrant également des formulations critiques pour signaler les défauts.
 
